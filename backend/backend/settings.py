@@ -186,3 +186,12 @@ STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY')
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
 UPI_MERCHANT_ID = os.environ.get('UPI_MERCHANT_ID')
 UPI_MERCHANT_KEY = os.environ.get('UPI_MERCHANT_KEY')
+
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]   # optional, for your custom static folder
+STATIC_ROOT = BASE_DIR / "staticfiles"     # collectstatic will dump files here (for prod)
+
+# Media files (User uploads: images, PDFs, etc.)
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"

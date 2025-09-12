@@ -17,9 +17,10 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(Donation)
 class DonationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'amount', 'status', 'created_at')
-    list_filter = ('status', 'created_at')
-    search_fields = ('name', 'email')
+    list_display = ('donor', 'amount', 'purpose', 'status', 'date')
+    list_filter = ('status', 'date')
+    search_fields = ('donor', 'purpose')
+
 
 @admin.register(Gallery)
 class GalleryAdmin(admin.ModelAdmin):

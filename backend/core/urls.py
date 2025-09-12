@@ -9,7 +9,7 @@ from .views import (
 router = DefaultRouter()
 router.register(r'projects', ProjectViewSet)
 router.register(r'donations', DonationViewSet)
-router.register(r'gallery', GalleryViewSet)
+router.register(r'gallery', GalleryViewSet, basename="gallery")
 router.register(r'events', EventViewSet)
 router.register(r'impact', ImpactViewSet)
 router.register(r'testimonials', TestimonialViewSet)
