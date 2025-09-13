@@ -44,6 +44,9 @@
   /* Focus ring color */
   --ring: 142 76% 36%;
 
+  /* Destructive colors for errors */
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
   /* Radius for rounded corners */
   --radius: 0.75rem;
 }
@@ -73,6 +76,9 @@
   --border: 217.2 32.6% 17.5%;
   --input: 217.2 32.6% 17.5%;
   --ring: 142 76% 36%;
+
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
 }
 
 @theme inline {
@@ -92,6 +98,8 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
@@ -122,6 +130,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
   h1 {
     @apply text-4xl font-bold text-primary mb-6;
@@ -134,5 +143,19 @@
   }
   p {
     @apply mb-4 leading-relaxed;
+  }
+}
+
+@layer components {
+  .auth-card {
+    @apply bg-white/80 backdrop-blur-sm border-0 shadow-lg;
+  }
+  
+  .auth-input {
+    @apply transition-all duration-200 focus:ring-2 focus:ring-primary/20;
+  }
+  
+  .loading-spinner {
+    @apply w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin;
   }
 }

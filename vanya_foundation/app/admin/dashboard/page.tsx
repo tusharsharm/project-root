@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { AdminAuthGuard } from "@/components/admin-auth-guard"
 import { useAuth } from "@/hooks/use-auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -43,7 +44,7 @@ interface Volunteer {
 
 // ----------------- Component -----------------
 export default function AdminDashboard() {
-  const { isAuthenticated, accessToken, logout } = useAuth()
+  const { user, isAuthenticated, accessToken, logout } = useAuth()
   const { toast } = useToast()
   const [donations, setDonations] = useState<Donation[]>([])
   const [volunteers, setVolunteers] = useState<Volunteer[]>([])
@@ -55,11 +56,8 @@ export default function AdminDashboard() {
     blogs: 0,
   })
 
-  // Fetch data once authenticated
   useEffect(() => {
-    if (!isAuthenticated) {
-      window.location.href = "/admin"
-    } else {
+    if (isAuthenticated && accessToken) {
       fetchData()
     }
   }, [isAuthenticated, accessToken])
@@ -96,17 +94,43 @@ export default function AdminDashboard() {
     }
   }
 
-  // Redirect to login if not authed
-  if (!isAuthenticated) {
-    return <div className="min-h-screen flex items-center justify-center">Redirecting to login...</div>
-  }
+  return (
+    <AdminAuthGuard>
+      <AdminDashboardContent 
+        donations={donations}
+        volunteers={volunteers}
+        loading={loading}
+        user={user}
+        logout={logout}
+      />
+    </AdminAuthGuard>
+  )
+}
 
-  // Loader
+function AdminDashboardContent({ 
+  donations, 
+  volunteers, 
+  loading, 
+  user, 
+  logout 
+}: {
+  donations: Donation[]
+  volunteers: Volunteer[]
+  loading: boolean
+  user: any
+  logout: () => void
+}) {
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Fetching data...</div>
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading dashboard...</p>
+        </div>
+      </div>
+    )
   }
 
-  // Stats
   const totalDonations = donations.reduce((sum, d) => sum + Number(d.amount), 0)
   const completedDonations = donations.filter((d) => d.status === "Completed" || d.paid).length
   const activeVolunteers = volunteers.filter((v) => v.status === "Active").length
@@ -115,12 +139,14 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-muted/30">
       {/* Header */}
-      <header className="bg-white border-b">
+      <header className="bg-white border-b shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div>
               <h1 className="text-xl font-bold text-primary">Vanya Foundation</h1>
-              <p className="text-sm text-muted-foreground">Admin Dashboard</p>
+              <p className="text-sm text-muted-foreground">
+                Admin Dashboard - Welcome, {user?.first_name || user?.username}
+              </p>
             </div>
             <div className="flex items-center space-x-4">
               <Button variant="outline" size="sm">
@@ -136,11 +162,11 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      {/* Main */}
+      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
+          <Card className="hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -152,7 +178,7 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -164,7 +190,7 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -176,7 +202,7 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -199,7 +225,7 @@ export default function AdminDashboard() {
 
           {/* Donations Tab */}
           <TabsContent value="donations">
-            <Card>
+            <Card className="shadow-sm">
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <CardTitle>Recent Donations</CardTitle>
@@ -261,7 +287,7 @@ export default function AdminDashboard() {
 
           {/* Volunteers Tab */}
           <TabsContent value="volunteers">
-            <Card>
+            <Card className="shadow-sm">
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <CardTitle>Volunteer Applications</CardTitle>
@@ -329,7 +355,7 @@ export default function AdminDashboard() {
           {/* Content Management Tab */}
           <TabsContent value="content">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
+              <Card className="shadow-sm">
                 <CardHeader>
                   <CardTitle>Website Pages</CardTitle>
                 </CardHeader>
@@ -389,7 +415,7 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="shadow-sm">
                 <CardHeader>
                   <CardTitle>Media & Content</CardTitle>
                 </CardHeader>

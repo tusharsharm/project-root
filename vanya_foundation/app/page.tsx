@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { AuthGuard } from "@/components/auth-guard"
 import Link from "next/link"
 import { Users, GraduationCap, Heart, Stethoscope, ArrowRight, CheckCircle, Save, X } from "lucide-react"
 import { useEffect, useState } from "react"
@@ -67,32 +68,33 @@ export default function HomePage() {
   }, [])
 
   return (
-    <div className="min-h-screen">
-      <Header />
+    <AuthGuard>
+      <div className="min-h-screen">
+        <Header />
 
-      {isAdmin && (
-        <div className="fixed top-4 right-4 z-50 flex gap-2">
-          {!isEditing ? (
-            <Button onClick={() => setIsEditing(true)} className="bg-primary">
-              Edit Page
-            </Button>
-          ) : (
-            <>
-              <Button onClick={handleSave} className="bg-green-600 hover:bg-green-700">
-                <Save className="w-4 h-4 mr-2" />
-                Save
+        {isAdmin && (
+          <div className="fixed top-4 right-4 z-50 flex gap-2">
+            {!isEditing ? (
+              <Button onClick={() => setIsEditing(true)} className="bg-primary shadow-lg">
+                Edit Page
               </Button>
-              <Button onClick={handleCancel} variant="outline">
-                <X className="w-4 h-4 mr-2" />
-                Cancel
-              </Button>
-            </>
-          )}
-        </div>
-      )}
+            ) : (
+              <>
+                <Button onClick={handleSave} className="bg-green-600 hover:bg-green-700 shadow-lg">
+                  <Save className="w-4 h-4 mr-2" />
+                  Save
+                </Button>
+                <Button onClick={handleCancel} variant="outline" className="shadow-lg">
+                  <X className="w-4 h-4 mr-2" />
+                  Cancel
+                </Button>
+              </>
+            )}
+          </div>
+        )}
 
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-primary/10 to-primary/5 py-20">
+        {/* Hero Section */}
+        <section className="relative bg-gradient-to-r from-primary/10 to-primary/5 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -454,7 +456,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </AuthGuard>
   )
 }

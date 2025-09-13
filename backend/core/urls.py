@@ -5,6 +5,7 @@ from .views import (
     ImpactViewSet, TestimonialViewSet, CareerViewSet, NewsletterViewSet,
     ContactViewSet, LanguageViewSet, TranslationViewSet
 )
+from .auth import register_user, get_user_profile
 
 router = DefaultRouter()
 router.register(r'projects', ProjectViewSet)
@@ -21,4 +22,6 @@ router.register(r'translations', TranslationViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('auth/register/', register_user, name='register'),
+    path('auth/profile/', get_user_profile, name='profile'),
 ]
