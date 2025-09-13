@@ -68,22 +68,27 @@ export default function AdminDashboard() {
     try {
       const headers = { Authorization: `Bearer ${accessToken}` }
 
-      const [donRes, volRes, statRes] = await Promise.all([
+      const [donRes, volRes] = await Promise.all([
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/donations/`, { headers }),
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/volunteers/`, { headers }),
-        fetch("/api/admin/stats"),
       ])
 
-      if (donRes.ok) setDonations(await donRes.json())
-      if (volRes.ok) setVolunteers(await volRes.json())
-      if (statRes.ok) {
-        const data = await statRes.json()
-        if (data.success) {
-          setStats(data.stats)
-        } else {
-          throw new Error("Failed to fetch stats")
-        }
+      if (donRes.ok) {
+        const donationsData = await donRes.json()
+        setDonations(donationsData.results || donationsData)
       }
+      if (volRes.ok) {
+        const volunteersData = await volRes.json()
+        setVolunteers(volunteersData.results || volunteersData)
+      }
+      
+      // Set basic stats
+      setStats({
+        contacts: 0,
+        volunteers: volunteers.length,
+        newsletters: 0,
+        blogs: 0,
+      })
     } catch (err) {
       console.error("Error fetching data:", err)
       toast({

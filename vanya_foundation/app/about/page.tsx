@@ -5,16 +5,38 @@ import { Target, Eye, Award, Users } from "lucide-react"
 
 // Fetch About data from Django backend
 async function getAbout() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/about/`, {
-    cache: "no-store", // always fresh
-  });
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/about/`, {
+      cache: "no-store", // always fresh
+    });
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch About content");
+    if (!res.ok) {
+      throw new Error("Failed to fetch About content");
+    }
+
+    const data = await res.json();
+    return data.length > 0 ? data[0] : getDefaultAbout();
+  } catch (error) {
+    console.error("Error fetching about data:", error);
+    return getDefaultAbout();
   }
+}
 
-  const data = await res.json();
-  return data[0]; // assuming only 1 About entry in backend
+function getDefaultAbout() {
+  return {
+    title: "About Vanya Foundation",
+    subtitle: "Empowering communities through sustainable development and social impact initiatives",
+    mission: "To empower underprivileged communities through sustainable development programs in education, healthcare, and social welfare, creating lasting positive change in society.",
+    vision: "A world where every individual has equal opportunities to thrive and contribute to society, regardless of their background or circumstances.",
+    story: "Founded in 2009 with a vision to bridge the gap between privilege and need, Vanya Foundation began as a small initiative to provide educational support to children in rural communities.\n\nOver the years, we have expanded our reach and impact, touching thousands of lives across India through comprehensive programs in education, healthcare, and community development.",
+    values: [
+      { title: "Integrity", description: "We maintain the highest standards of honesty and transparency in all our operations." },
+      { title: "Compassion", description: "We approach every situation with empathy and understanding for those we serve." },
+      { title: "Excellence", description: "We strive for excellence in program delivery and measurable impact." },
+      { title: "Sustainability", description: "We focus on creating long-term solutions that communities can maintain." }
+    ],
+    values_intro: "These core principles guide everything we do and shape our approach to community development"
+  };
 }
 
 export default async function AboutPage() {

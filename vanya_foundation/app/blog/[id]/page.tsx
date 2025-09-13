@@ -82,13 +82,25 @@ const relatedPosts = [
 ]
 
 async function getBlogPost(id: string) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blog/${id}/`)
-  if (!res.ok) throw new Error("Failed to fetch blog post")
-  return res.json()
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blog/${id}/`)
+    if (!res.ok) throw new Error("Failed to fetch blog post")
+    return res.json()
+  } catch (error) {
+    console.error("Error fetching blog post:", error);
+    // Return the mock data as fallback
+    return blogPost;
+  }
 }
 
 export default async function BlogPost({ params }: { params: { id: string } }) {
-  const post = await getBlogPost(params.id)
+  let post;
+  try {
+    post = await getBlogPost(params.id);
+  } catch (error) {
+    // Use mock data as fallback
+    post = blogPost;
+  }
 
   return (
     <div className="min-h-screen">

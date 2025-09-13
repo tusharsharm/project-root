@@ -1,20 +1,26 @@
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 from django.shortcuts import get_object_or_404
-from .models import (
-    Contact, Project, Donation, Gallery, Event, 
-    Impact, Testimonial, Career, Language, Translation, Newsletter
-)
-from .serializers import (
-    ContactSerializer, ProjectSerializer, DonationSerializer,
-    GallerySerializer, EventSerializer, ImpactSerializer,
-    TestimonialSerializer, CareerSerializer, LanguageSerializer,
-    TranslationSerializer, NewsletterSerializer
-)
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from .models import *
+from .serializers import *
 from django.conf import settings
 from .utils_email import send_email_async  # simple helper
 from .payments import create_payment_order  # optional razorpay helper
+
+class AboutViewSet(viewsets.ModelViewSet):
+    queryset = About.objects.all()
+    serializer_class = AboutSerializer
+    permission_classes = [permissions.AllowAny]
+
+class BlogViewSet(viewsets.ModelViewSet):
+    queryset = Blog.objects.all().order_by("-created_at")
+    serializer_class = BlogSerializer
+    permission_classes = [permissions.AllowAny]
 
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all().order_by("-created_at")
@@ -132,9 +138,45 @@ class ContactViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        contact = serializer.save()
+        
+        # Send email notification
+        try:
+            send_email_async(
+                subject=f"New Contact Form Submission: {contact.name}",
+                message=f"Name: {contact.name}\nEmail: {contact.email}\nMessage: {contact.message}",
+                recipient_list=['admin@vanyafoundation.org']
+            )
+        except Exception as e:
+            print(f"Email sending failed: {e}")
+        
         return Response(
             {'message': 'Message sent successfully'},
+            status=status.HTTP_201_CREATED
+        )
+
+class VolunteerViewSet(viewsets.ModelViewSet):
+    queryset = Volunteer.objects.all().order_by("-join_date")
+    serializer_class = VolunteerSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        volunteer = serializer.save()
+        
+        # Send confirmation email
+        try:
+            send_email_async(
+                subject="Thank you for volunteering with Vanya Foundation",
+                message=f"Dear {volunteer.name},\n\nThank you for your interest in volunteering with us. We will contact you soon.",
+                recipient_list=[volunteer.email]
+            )
+        except Exception as e:
+            print(f"Email sending failed: {e}")
+        
+        return Response(
+            {'message': 'Volunteer application submitted successfully'},
             status=status.HTTP_201_CREATED
         )
 

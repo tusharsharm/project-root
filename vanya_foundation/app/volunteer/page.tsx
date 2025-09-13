@@ -16,13 +16,29 @@ import { Users, Heart, Clock, MapPin, GraduationCap, Stethoscope } from "lucide-
 export default function VolunteerPage() {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     phone: '',
+    areas: [] as string[],
+    availability: '',
     skills: '',
-    message: ''
+    experience: '',
+    motivation: '',
+    emergencyName: '',
+    emergencyPhone: '',
+    relationship: ''
   });
   const [loading, setLoading] = useState(false);
+
+  const handleAreaChange = (area: string, checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      areas: checked 
+        ? [...prev.areas, area]
+        : prev.areas.filter(a => a !== area)
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,7 +58,20 @@ export default function VolunteerPage() {
           title: "Success!",
           description: "Your volunteer application has been submitted successfully.",
         });
-        setFormData({ name: '', email: '', phone: '', skills: '', message: '' });
+        setFormData({
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          areas: [],
+          availability: '',
+          skills: '',
+          experience: '',
+          motivation: '',
+          emergencyName: '',
+          emergencyPhone: '',
+          relationship: ''
+        });
       } else {
         throw new Error(data.error);
       }
@@ -165,19 +194,45 @@ export default function VolunteerPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="firstName">First Name *</Label>
-                      <Input id="firstName" placeholder="Enter your first name" required />
+                      <Input 
+                        id="firstName" 
+                        value={formData.firstName}
+                        onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                        placeholder="Enter your first name" 
+                        required 
+                      />
                     </div>
                     <div>
                       <Label htmlFor="lastName">Last Name *</Label>
-                      <Input id="lastName" placeholder="Enter your last name" required />
+                      <Input 
+                        id="lastName" 
+                        value={formData.lastName}
+                        onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                        placeholder="Enter your last name" 
+                        required 
+                      />
                     </div>
                     <div>
                       <Label htmlFor="email">Email Address *</Label>
-                      <Input id="email" type="email" placeholder="Enter your email" required />
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        value={formData.email}
+                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                        placeholder="Enter your email" 
+                        required 
+                      />
                     </div>
                     <div>
                       <Label htmlFor="phone">Phone Number *</Label>
-                      <Input id="phone" type="tel" placeholder="Enter your phone number" required />
+                      <Input 
+                        id="phone" 
+                        type="tel" 
+                        value={formData.phone}
+                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                        placeholder="Enter your phone number" 
+                        required 
+                      />
                     </div>
                     <div>
                       <Label htmlFor="age">Age</Label>
@@ -204,27 +259,51 @@ export default function VolunteerPage() {
                     </Label>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div className="flex items-center space-x-2">
-                        <Checkbox id="education" />
+                        <Checkbox 
+                          id="education" 
+                          checked={formData.areas.includes('Education & Teaching')}
+                          onCheckedChange={(checked) => handleAreaChange('Education & Teaching', checked as boolean)}
+                        />
                         <Label htmlFor="education">Education & Teaching</Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Checkbox id="healthcare" />
+                        <Checkbox 
+                          id="healthcare" 
+                          checked={formData.areas.includes('Healthcare & Wellness')}
+                          onCheckedChange={(checked) => handleAreaChange('Healthcare & Wellness', checked as boolean)}
+                        />
                         <Label htmlFor="healthcare">Healthcare & Wellness</Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Checkbox id="community" />
+                        <Checkbox 
+                          id="community" 
+                          checked={formData.areas.includes('Community Development')}
+                          onCheckedChange={(checked) => handleAreaChange('Community Development', checked as boolean)}
+                        />
                         <Label htmlFor="community">Community Development</Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Checkbox id="events" />
+                        <Checkbox 
+                          id="events" 
+                          checked={formData.areas.includes('Event Organization')}
+                          onCheckedChange={(checked) => handleAreaChange('Event Organization', checked as boolean)}
+                        />
                         <Label htmlFor="events">Event Organization</Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Checkbox id="fundraising" />
+                        <Checkbox 
+                          id="fundraising" 
+                          checked={formData.areas.includes('Fundraising')}
+                          onCheckedChange={(checked) => handleAreaChange('Fundraising', checked as boolean)}
+                        />
                         <Label htmlFor="fundraising">Fundraising</Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Checkbox id="admin" />
+                        <Checkbox 
+                          id="admin" 
+                          checked={formData.areas.includes('Administrative Support')}
+                          onCheckedChange={(checked) => handleAreaChange('Administrative Support', checked as boolean)}
+                        />
                         <Label htmlFor="admin">Administrative Support</Label>
                       </div>
                     </div>
@@ -232,7 +311,10 @@ export default function VolunteerPage() {
 
                   <div className="mb-6">
                     <Label className="text-base font-medium mb-3 block">Availability</Label>
-                    <RadioGroup defaultValue="weekends">
+                    <RadioGroup 
+                      value={formData.availability} 
+                      onValueChange={(value) => setFormData({...formData, availability: value})}
+                    >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="weekdays" id="weekdays" />
                         <Label htmlFor="weekdays">Weekdays</Label>
@@ -279,6 +361,8 @@ export default function VolunteerPage() {
                       <Label htmlFor="skills">Special Skills or Qualifications</Label>
                       <Textarea
                         id="skills"
+                        value={formData.skills}
+                        onChange={(e) => setFormData({...formData, skills: e.target.value})}
                         placeholder="List any relevant skills, qualifications, or experience (e.g., teaching, medical, technical, language skills, etc.)"
                         rows={3}
                       />
@@ -287,6 +371,8 @@ export default function VolunteerPage() {
                       <Label htmlFor="experience">Previous Volunteer Experience</Label>
                       <Textarea
                         id="experience"
+                        value={formData.experience}
+                        onChange={(e) => setFormData({...formData, experience: e.target.value})}
                         placeholder="Describe any previous volunteer work or community involvement"
                         rows={3}
                       />
@@ -295,6 +381,8 @@ export default function VolunteerPage() {
                       <Label htmlFor="motivation">Why do you want to volunteer with us?</Label>
                       <Textarea
                         id="motivation"
+                        value={formData.motivation}
+                        onChange={(e) => setFormData({...formData, motivation: e.target.value})}
                         placeholder="Tell us what motivates you to volunteer and how you hope to contribute"
                         rows={3}
                       />
@@ -308,15 +396,31 @@ export default function VolunteerPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="emergencyName">Contact Name</Label>
-                      <Input id="emergencyName" placeholder="Emergency contact name" />
+                      <Input 
+                        id="emergencyName" 
+                        value={formData.emergencyName}
+                        onChange={(e) => setFormData({...formData, emergencyName: e.target.value})}
+                        placeholder="Emergency contact name" 
+                      />
                     </div>
                     <div>
                       <Label htmlFor="emergencyPhone">Contact Phone</Label>
-                      <Input id="emergencyPhone" type="tel" placeholder="Emergency contact phone" />
+                      <Input 
+                        id="emergencyPhone" 
+                        type="tel" 
+                        value={formData.emergencyPhone}
+                        onChange={(e) => setFormData({...formData, emergencyPhone: e.target.value})}
+                        placeholder="Emergency contact phone" 
+                      />
                     </div>
                     <div>
                       <Label htmlFor="relationship">Relationship</Label>
-                      <Input id="relationship" placeholder="Relationship to you" />
+                      <Input 
+                        id="relationship" 
+                        value={formData.relationship}
+                        onChange={(e) => setFormData({...formData, relationship: e.target.value})}
+                        placeholder="Relationship to you" 
+                      />
                     </div>
                   </div>
                 </div>
@@ -350,11 +454,16 @@ export default function VolunteerPage() {
                 </div>
 
                 {/* Submit Button */}
-                <Button className="w-full h-12 text-lg bg-primary hover:bg-primary/90">
-                  Submit Volunteer Application
+                <Button 
+                  type="submit"
+                  className="w-full h-12 text-lg bg-primary hover:bg-primary/90"
+                  disabled={loading}
+                >
+                  {loading ? 'Submitting...' : 'Submit Volunteer Application'}
                 </Button>
               </CardContent>
             </Card>
+          </form>
           </div>
         </div>
       </section>

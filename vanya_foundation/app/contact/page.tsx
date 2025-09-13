@@ -221,10 +221,11 @@ export default function ContactPage() {
                       <Input
                         type="text"
                         id="name"
+                        name="name"
                         placeholder="Your Name"
                         aria-label="Your Name"
                         value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        onChange={handleInputChange}
                         className="w-full p-2 border rounded"
                         required
                       />
@@ -236,10 +237,11 @@ export default function ContactPage() {
                       <Input
                         type="email"
                         id="email"
+                        name="email"
                         placeholder="Your Email"
                         aria-label="Your Email"
                         value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        onChange={handleInputChange}
                         className="w-full p-2 border rounded"
                         required
                       />
@@ -250,10 +252,11 @@ export default function ContactPage() {
                       </label>
                       <Textarea
                         id="message"
+                        name="message"
                         placeholder="Your Message"
                         aria-label="Your Message"
                         value={formData.message}
-                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        onChange={handleInputChange}
                         className="w-full p-2 border rounded h-32"
                         required
                       />

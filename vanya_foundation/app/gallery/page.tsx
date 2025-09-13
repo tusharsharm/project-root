@@ -6,8 +6,55 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calendar, MapPin, Users, Eye } from "lucide-react"
 
-// Mock gallery data
-const galleryImages = {
+// Fetch gallery data from backend
+async function getGalleryImages() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/gallery/`, {
+      cache: "no-store",
+    });
+    
+    if (!res.ok) {
+      throw new Error("Failed to fetch gallery");
+    }
+    
+    const data = await res.json();
+    return data.results || data;
+  } catch (error) {
+    console.error("Error fetching gallery:", error);
+    return getMockGalleryData();
+  }
+}
+
+function getMockGalleryData() {
+  return [
+    {
+      id: 1,
+      title: "School Infrastructure Development",
+      category: "Education",
+      description: "New classroom construction in partnership with local community",
+      image: "/placeholder.svg?height=300&width=400&text=School+Building",
+      created_at: "2024-01-15T00:00:00Z",
+    },
+    {
+      id: 2,
+      title: "Mobile Health Camp",
+      category: "Healthcare",
+      description: "Free medical checkups and vaccination drive",
+      image: "/placeholder.svg?height=300&width=400&text=Health+Camp",
+      created_at: "2023-12-20T00:00:00Z",
+    },
+    {
+      id: 3,
+      title: "Women's Skill Training",
+      category: "Community Development",
+      description: "Vocational training program for rural women",
+      image: "/placeholder.svg?height=300&width=400&text=Skill+Training",
+      created_at: "2023-11-15T00:00:00Z",
+    },
+  ];
+}
+
+const mockGalleryImages = {
   all: [
     {
       id: 1,
@@ -84,7 +131,22 @@ const galleryImages = {
   ],
 }
 
-export default function GalleryPage() {
+export default async function GalleryPage() {
+  const galleryData = await getGalleryImages();
+  
+  // Transform backend data to match frontend structure
+  const galleryImages = {
+    all: galleryData.map((item: any) => ({
+      id: item.id,
+      title: item.title,
+      category: item.category,
+      location: "India", // Default location
+      date: new Date(item.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+      image: item.image || "/placeholder.svg?height=300&width=400",
+      description: item.description || ""
+    }))
+  };
+  
   const educationImages = galleryImages.all.filter((img) => img.category === "Education")
   const healthcareImages = galleryImages.all.filter((img) => img.category === "Healthcare")
   const communityImages = galleryImages.all.filter((img) => img.category === "Community Development")
