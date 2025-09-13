@@ -3,10 +3,19 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Menu, X, Heart } from "lucide-react"
+import { Menu, X, Heart, User, LogOut } from "lucide-react"
+import { useAuth } from "@/hooks/use-auth"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { user, isAuthenticated, logout } = useAuth()
 
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-50">
@@ -43,9 +52,46 @@ export function Header() {
             <Link href="/contact" className="text-foreground hover:text-primary transition-colors">
               Contact
             </Link>
-            <Button asChild className="bg-primary hover:bg-primary/90">
-              <Link href="/donate">Donate Now</Link>
-            </Button>
+            
+            {isAuthenticated ? (
+              <div className="flex items-center space-x-4">
+                <Button asChild className="bg-primary hover:bg-primary/90">
+                  <Link href="/donate">Donate Now</Link>
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                      <User className="w-4 h-4" />
+                      {user?.first_name || user?.username}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile">Profile</Link>
+                    </DropdownMenuItem>
+                    {user?.is_staff && (
+                      <DropdownMenuItem asChild>
+                        <Link href="/admin/dashboard">Admin Dashboard</Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={logout} className="text-red-600">
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-4">
+                <Button asChild className="bg-primary hover:bg-primary/90">
+                  <Link href="/donate">Donate Now</Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link href="/login">Login</Link>
+                </Button>
+              </div>
+            )}
           </nav>
 
           {/* Mobile menu button */}
@@ -76,9 +122,35 @@ export function Header() {
               <Link href="/contact" className="text-foreground hover:text-primary transition-colors">
                 Contact
               </Link>
-              <Button asChild className="bg-primary hover:bg-primary/90 w-fit">
-                <Link href="/donate">Donate Now</Link>
-              </Button>
+              
+              {isAuthenticated ? (
+                <div className="space-y-2 pt-2 border-t">
+                  <p className="text-sm text-muted-foreground">
+                    Welcome, {user?.first_name || user?.username}
+                  </p>
+                  <Button asChild className="bg-primary hover:bg-primary/90 w-fit">
+                    <Link href="/donate">Donate Now</Link>
+                  </Button>
+                  {user?.is_staff && (
+                    <Button asChild variant="outline" className="w-fit">
+                      <Link href="/admin/dashboard">Admin Dashboard</Link>
+                    </Button>
+                  )}
+                  <Button variant="ghost" onClick={logout} className="w-fit text-red-600">
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Logout
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-2 pt-2 border-t">
+                  <Button asChild className="bg-primary hover:bg-primary/90 w-fit">
+                    <Link href="/donate">Donate Now</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-fit">
+                    <Link href="/login">Login</Link>
+                  </Button>
+                </div>
+              )}
             </nav>
           </div>
         )}

@@ -28,5 +28,8 @@ def register_user(request):
 
 @api_view(['GET'])
 def get_user_profile(request):
+    if not request.user.is_authenticated:
+        return Response({'error': 'Not authenticated'}, status=401)
+        
     serializer = UserSerializer(request.user)
     return Response(serializer.data)

@@ -29,12 +29,11 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-ghf9b#v*zxjoammv7lixzu7f_1z0pyv_s%s-@2i_jav%6=^@gr")
+SECRET_KEY = 'django-insecure-ghf9b#v*zxjoammv7lixzu7f_1z0pyv_s%s-@2i_jav%6=^@gr'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "True") == "True"
+DEBUG = True
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost,0.0.0.0").split(",")
 
 
 
