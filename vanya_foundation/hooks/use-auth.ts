@@ -25,10 +25,16 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider(props: { children: React.ReactNode }) {
   const auth = useAuthHook()
-  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider value={auth}>
+      {props.children}
+    </AuthContext.Provider>
+  )
 }
+
+
 
 export function useAuth() {
   const context = useContext(AuthContext)
